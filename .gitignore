@@ -7,4 +7,5 @@ example-app/.gradle/*
 *.iml
 .idea/*
 
+.settings/*
 bin/*

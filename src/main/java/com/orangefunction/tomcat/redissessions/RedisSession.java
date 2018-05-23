@@ -1,27 +1,25 @@
 package com.orangefunction.tomcat.redissessions;
 
-import java.security.Principal;
-import org.apache.catalina.Manager;
-import org.apache.catalina.session.StandardSession;
-import java.util.HashMap;
 import java.io.IOException;
-
-import org.apache.juli.logging.Log;
-import org.apache.juli.logging.LogFactory;
-
+import java.lang.reflect.Type;
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Enumeration;
+import org.apache.catalina.Manager;
+import org.apache.catalina.session.StandardSession;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 
 public class RedisSession extends StandardSession {
 
@@ -146,9 +144,20 @@ public class RedisSession extends StandardSession {
         id = jsession.sessionId;
         this.setCreationTime(jsession.thisCreationTime);
 
-        Gson gson2 = new GsonBuilder().enableComplexMapKeySerialization().create();
-        Type type = new TypeToken<ConcurrentHashMap<String, Object>>() {}.getType();
-        this.attributes = gson2.fromJson(jsession.attributes, type);
+        for (ConcurrentMap.Entry<String, Object> entry : jsession.attributesMap.entrySet()) {
+            String name = entry.getKey();
+            Object value = entry.getValue();
+            System.out.println("Key = " + name + ", Value = " + value);
+            this.putValue(name, value);
+        }
+
+        /* // Test
+        Enumeration<String> keys = this.getAttributeNames();
+        while (keys.hasMoreElements()) {
+            String name = keys.nextElement();
+            Object value = this.getAttribute(name);
+            System.out.println("ThisKey = " + name + ", ThisValue = " + value);
+        } */
 
     }
 
@@ -164,39 +173,17 @@ public class RedisSession extends StandardSession {
         jsonSession.sessionId = id;
         jsonSession.thisCreationTime = this.getCreationTime();
 
-        System.out.println("+++++++++++++++++++ jsonSession.: ");
-        // Gson gson2 = new GsonBuilder().enableComplexMapKeySerialization().create();
-        // jsonSession.attributes = gson2.toJson(this.attributes);
-        HashMap<String, List<String>> employees = new HashMap<>();
-        employees.put("A", Arrays.asList("Andreas", "Arnold", "Aden"));
-        employees.put("C", Arrays.asList("Christian", "Carter"));
-        employees.put("M", Arrays.asList("Marcus", "Mary"));
-        System.out.println(new Gson().toJson(employees));
-
         ConcurrentMap<String, Object> myattributes = new ConcurrentHashMap<String, Object>();
-        this.putValue("test", "test");
-        System.out.println("+++++++++++++" + this.getAttribute("test"));
         Enumeration<String> keys = this.getAttributeNames();
-        while(keys.hasMoreElements()) {
+        while (keys.hasMoreElements()) {
             String name = keys.nextElement();
-            System.out.println("=== " + name);
             Object value = this.getAttribute(name);
             myattributes.put(name, value);
         }
-        myattributes.put("hashMap", employees);
-        // for (String s : this.getAttributeNames() ){
-            // System.out.println("=== " + s);
-        // }
-
-        /* for (String s : attributes.keySet() ){
-            System.out.println("=== " + s);
-        }
-        System.out.println("+++++++++++++" + this.attributes.get("test"));
- */
+        /* // Test
+        myattributes.put("long", "test"); */
         jsonSession.attributesMap = myattributes;
-        jsonSession.attributes = new Gson().toJson(myattributes, ConcurrentMap.class);
 
-        System.out.println("+++++++++++++++++++ jsonSession.attributes: " + jsonSession.attributes);
         return jsonSession;
     }
 }

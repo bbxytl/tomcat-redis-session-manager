@@ -503,16 +503,13 @@ public class RedisSessionManager extends ManagerBase implements Lifecycle {
             log.trace("Attempting to load session " + id + " from Redis");
 
             jedis = acquireConnection();
-            // byte[] data = jedis.get(id.getBytes());
             String jsonStr = jedis.get(id);
             error = false;
 
-            // if (data == null) {
             if (jsonStr == null || jsonStr.length() == 0) {
                 log.trace("Session " + id + " not found in Redis");
             }
 
-            // return data;
             return jsonStr;
         } finally {
             if (jedis != null) {

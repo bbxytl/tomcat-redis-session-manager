@@ -115,34 +115,6 @@ public class JavaSerializer implements Serializer {
     @Override
     public void deserializeInto(String data, RedisSession session, SessionSerializationMetadata metadata) throws IOException, ClassNotFoundException {
         System.out.println("===*****========= " + data);
-        // session = gson.fromJson(data, RedisSession.class);
-        /* try {
-            session = Gson.class.newInstance().fromJson(data, RedisSession.class);
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        } */
-        /* DeserializedSessionContainer container = new DeserializedSessionContainer(session, metadata);
-        try {
-              container = Gson.class.newInstance().fromJson(data, DeserializedSessionContainer.class);
-              session = container.session;
-              metadata = container.metadata;
-        } catch (InstantiationException | IllegalAccessException e) {
-              e.printStackTrace();
-        } */
-        // session = gson.fromJson(data, RedisSession.class);
-        /* try(
-            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(data.getBytes()));
-            ObjectInputStream ois = new CustomObjectInputStream(bis, loader);
-        ) {
-          SessionSerializationMetadata serializedMetadata = (SessionSerializationMetadata)ois.readObject();
-          metadata.copyFieldsFrom(serializedMetadata);
-          session.readObjectData(ois);
-        } */
-        /* SessionSerializationMetadata metadatanew = JSON.parseObject(data, SessionSerializationMetadata.class);
-        metadata.copyFieldsFrom(metadatanew);
-        System.out.println(metadata.getSessionAttributesHash().toString()); */
-        // session = (RedisSession)JSON.parseObject(data, Session.class);
-
         JsonSession jsession = gson.fromJson(data, JsonSession.class);
         session.readJsonSession(jsession);
         System.out.println("***************** " + session.getId());
@@ -164,10 +136,9 @@ class JsonSession{
     public String sessionId;
     public Long thisCreationTime;
     public ConcurrentMap<String, Object> attributesMap;
-    public String attributes;
 
     public JsonSession(){
-        // attributes = new ConcurrentHashMap<String, Object>();
+        attributesMap = new ConcurrentHashMap<String, Object>();
     }
 
     public JsonSession(Long creationTime, Long lastAccessedTime, Integer maxInactiveInterval, Boolean isNew, Boolean isValid, Long thisAccessedTime, String sessionId, Long thisCreationTime){
@@ -180,7 +151,6 @@ class JsonSession{
         this.sessionId = sessionId;
         this.thisCreationTime = thisCreationTime;
         this.attributesMap = new ConcurrentHashMap<String, Object>();
-        this.attributes = "";
     }
 
 }

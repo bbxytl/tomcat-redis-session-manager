@@ -1,21 +1,12 @@
 package com.orangefunction.tomcat.redissessions;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import org.apache.catalina.Manager;
 import org.apache.catalina.session.StandardSession;
 import org.apache.juli.logging.Log;

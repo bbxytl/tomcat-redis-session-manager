@@ -1,19 +1,14 @@
 package com.orangefunction.tomcat.redissessions;
 
-import org.apache.catalina.util.CustomObjectInputStream;
 
-import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import org.apache.catalina.Session;
 
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;

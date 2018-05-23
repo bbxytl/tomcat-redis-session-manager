@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.io.*;
@@ -16,6 +17,9 @@ import org.apache.catalina.Session;
 
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class JavaSerializer implements Serializer {
     private ClassLoader loader;
@@ -65,8 +69,7 @@ public class JavaSerializer implements Serializer {
         // return "test88888";
         System.out.println("============ In ");
         String data = null;
-        System.out.println("============ In 1");
-        data = JSON.toJSONString(session);
+        // data = JSON.toJSONString(session);
         /* // data = Gson.class.newInstance().toJson(session);
         // data = gson.toJson(session);
         if (data == null) {
@@ -77,8 +80,6 @@ public class JavaSerializer implements Serializer {
         if (data == "null") {
             data = "test-null-00";
         } */
-        System.out.println("============ out.data:  " + data);
-        return data;
         /* DeserializedSessionContainer container = new DeserializedSessionContainer(session, metadata);
         String data = null;
         try {
@@ -96,16 +97,25 @@ public class JavaSerializer implements Serializer {
           oos.writeObject(metadata);
           session.writeObjectData(oos);
           oos.flush();
-          serialized = bos.toByteArray();
+          data = bos.toString();
         }
 
         return serialized; */
+        JsonSession jsession = session.writeJsonSession();
+        data = JSON.toJSONString(jsession);
+        // data = gson.toJson(jsession);
+        // data = gson.toJson(jsession);
+        System.out.println("============ out.data:  " + data);
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
+        return data;
     }
 
     @Override
     public void deserializeInto(String data, RedisSession session, SessionSerializationMetadata metadata) throws IOException, ClassNotFoundException {
         System.out.println("===*****========= " + data);
-        session = gson.fromJson(data, RedisSession.class);
+        // session = gson.fromJson(data, RedisSession.class);
         /* try {
             session = Gson.class.newInstance().fromJson(data, RedisSession.class);
         } catch (InstantiationException | IllegalAccessException e) {
@@ -121,7 +131,7 @@ public class JavaSerializer implements Serializer {
         } */
         // session = gson.fromJson(data, RedisSession.class);
         /* try(
-            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(data));
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(data.getBytes()));
             ObjectInputStream ois = new CustomObjectInputStream(bis, loader);
         ) {
           SessionSerializationMetadata serializedMetadata = (SessionSerializationMetadata)ois.readObject();
@@ -132,6 +142,45 @@ public class JavaSerializer implements Serializer {
         metadata.copyFieldsFrom(metadatanew);
         System.out.println(metadata.getSessionAttributesHash().toString()); */
         // session = (RedisSession)JSON.parseObject(data, Session.class);
-        System.out.println("***************** " + session.getId() + session.getInfo());
+
+        JsonSession jsession = gson.fromJson(data, JsonSession.class);
+        session.readJsonSession(jsession);
+        System.out.println("***************** " + session.getId());
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
     }
+}
+
+
+
+class JsonSession{
+    public Long creationTime;
+    public Long lastAccessedTime;
+    public Integer maxInactiveInterval;
+    public Boolean isNew;
+    public Boolean isValid;
+    public Long thisAccessedTime;
+    public String sessionId;
+    public Long thisCreationTime;
+    public ConcurrentMap<String, Object> attributesMap;
+    public String attributes;
+
+    public JsonSession(){
+        // attributes = new ConcurrentHashMap<String, Object>();
+    }
+
+    public JsonSession(Long creationTime, Long lastAccessedTime, Integer maxInactiveInterval, Boolean isNew, Boolean isValid, Long thisAccessedTime, String sessionId, Long thisCreationTime){
+        this.creationTime = creationTime;
+        this.lastAccessedTime = lastAccessedTime;
+        this.maxInactiveInterval = maxInactiveInterval;
+        this.isNew = isNew;
+        this.isValid = isValid;
+        this.thisAccessedTime = thisAccessedTime;
+        this.sessionId = sessionId;
+        this.thisCreationTime = thisCreationTime;
+        this.attributesMap = new ConcurrentHashMap<String, Object>();
+        this.attributes = "";
+    }
+
 }

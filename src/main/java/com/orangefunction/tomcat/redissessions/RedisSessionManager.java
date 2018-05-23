@@ -346,13 +346,13 @@ public class RedisSessionManager extends ManagerBase implements Lifecycle {
             // Ensure generation of a unique session identifier.
             if (null != requestedSessionId) {
                 sessionId = sessionIdWithJvmRoute(requestedSessionId, jvmRoute);
-                if (jedis.setnx(sessionId, "test0") == 0L) {
+                if (jedis.setnx(sessionId, "null") == 0L) {
                     sessionId = null;
                 }
             } else {
                 do {
                     sessionId = sessionIdWithJvmRoute(generateSessionId(), jvmRoute);
-                } while (jedis.setnx(sessionId, "test1111") == 0L); // 1 = key set; 0 = key already existed
+                } while (jedis.setnx(sessionId, "null") == 0L); // 1 = key set; 0 = key already existed
             }
 
             /* Even though the key is set in Redis, we are not going to flag
@@ -558,7 +558,6 @@ public class RedisSessionManager extends ManagerBase implements Lifecycle {
             throw new IOException("Unable to deserialize into session", ex);
         }
 
-        log.debug("================== sessionId: " + session.getId());
         return new DeserializedSessionContainer(session, metadata);
     }
 
@@ -567,7 +566,6 @@ public class RedisSessionManager extends ManagerBase implements Lifecycle {
     }
 
     public void save(Session session, boolean forceSave) throws IOException {
-        forceSave = true;
         Jedis jedis = null;
         Boolean error = true;
 
@@ -623,17 +621,12 @@ public class RedisSessionManager extends ManagerBase implements Lifecycle {
                 updatedSerializationMetadata.setSessionAttributesHash(sessionAttributesHash);
 
                 // 存储到 Redis
-                System.out.println("====&&&&&&&-------- jsonStr: " + redisSession.getId());
                 String jsonStr = serializer.serializeFrom(redisSession, updatedSerializationMetadata);
                 if (jsonStr == null) {
-                    jsonStr = "test-Null";
-                }else if (jsonStr.length()== 0){
-                    jsonStr = "test-len0";
+                    jsonStr = "null";
                 }
-                System.out.println("====&&&&&&&-------- jsonStr: " + jsonStr + "   id: " + redisSession.getId());
                 jedis.set(redisSession.getId(), jsonStr);
                 // jedis.set(redisSession.getId(), serializer.serializeFrom(redisSession, updatedSerializationMetadata));
-                // jedis.set(redisSession.getId(), "test222");
 
                 redisSession.resetDirtyTracking();
                 currentSessionSerializationMetadata.set(updatedSerializationMetadata);

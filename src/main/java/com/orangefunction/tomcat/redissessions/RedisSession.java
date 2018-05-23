@@ -30,6 +30,7 @@ public class RedisSession extends StandardSession {
   protected HashMap<String, Object> changedAttributes;
   protected Boolean dirty;
 
+
   public RedisSession(Manager manager) {
     super(manager);
     resetDirtyTracking();

@@ -138,7 +138,7 @@ public class RedisSession extends StandardSession {
         for (ConcurrentMap.Entry<String, Object> entry : jsession.attributesMap.entrySet()) {
             String name = entry.getKey();
             Object value = entry.getValue();
-            System.out.println("Key = " + name + ", Value = " + value);
+            // System.out.println("Key = " + name + ", Value = " + value);
             this.putValue(name, value);
         }
 

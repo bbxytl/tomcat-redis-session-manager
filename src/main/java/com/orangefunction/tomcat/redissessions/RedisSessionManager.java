@@ -591,8 +591,6 @@ public class RedisSessionManager extends ManagerBase implements Lifecycle {
                 }
             }
 
-            byte[] binaryId = redisSession.getId().getBytes();
-
             Boolean isCurrentSessionPersisted;
             SessionSerializationMetadata sessionSerializationMetadata = currentSessionSerializationMetadata.get();
             byte[] originalSessionAttributesHash = sessionSerializationMetadata.getSessionAttributesHash();
@@ -630,7 +628,7 @@ public class RedisSessionManager extends ManagerBase implements Lifecycle {
             }
 
             log.trace("Setting expire timeout on session [" + redisSession.getId() + "] to " + getMaxInactiveInterval());
-            jedis.expire(binaryId, getMaxInactiveInterval());
+            jedis.expire(redisSession.getId(), getMaxInactiveInterval());
 
             error = false;
 

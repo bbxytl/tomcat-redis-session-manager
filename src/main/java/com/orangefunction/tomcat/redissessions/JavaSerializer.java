@@ -1,9 +1,5 @@
 package com.orangefunction.tomcat.redissessions;
 
-
-
-import com.alibaba.fastjson.JSON;
-import com.google.gson.Gson;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.io.*;
@@ -15,6 +11,8 @@ import org.apache.juli.logging.LogFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import com.google.gson.Gson;
 
 public class JavaSerializer implements Serializer {
     private ClassLoader loader;
@@ -61,67 +59,23 @@ public class JavaSerializer implements Serializer {
 
     @Override
     public String serializeFrom(RedisSession session, SessionSerializationMetadata metadata) throws IOException {
-        // return "test88888";
-        System.out.println("============ In ");
         String data = null;
-        // data = JSON.toJSONString(session);
-        /* // data = Gson.class.newInstance().toJson(session);
-        // data = gson.toJson(session);
-        if (data == null) {
-            data = "test333";
-        }
-        System.out.println("============ " + data);
-
-        if (data == "null") {
-            data = "test-null-00";
-        } */
-        /* DeserializedSessionContainer container = new DeserializedSessionContainer(session, metadata);
-        String data = null;
-        try {
-              data = Gson.class.newInstance().toJson(container);
-        } catch (InstantiationException | IllegalAccessException e) {
-              e.printStackTrace();
-        }
-        return data; */
-        /* byte[] serialized = null;
-
-        try (
-             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-             ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(bos));
-        ) {
-          oos.writeObject(metadata);
-          session.writeObjectData(oos);
-          oos.flush();
-          data = bos.toString();
-        }
-
-        return serialized; */
         JsonSession jsession = session.writeJsonSession();
-        data = JSON.toJSONString(jsession);
-        // data = gson.toJson(jsession);
-        // data = gson.toJson(jsession);
-        System.out.println("============ out.data:  " + data);
-        System.out.println("");
-        System.out.println("");
-        System.out.println("");
+        data = gson.toJson(jsession);
+        // System.out.println("===*****serializeFrom: " + data);
         return data;
     }
 
     @Override
     public void deserializeInto(String data, RedisSession session, SessionSerializationMetadata metadata) throws IOException, ClassNotFoundException {
-        System.out.println("===*****========= " + data);
+        // System.out.println("===*****deserializeInto: " + data);
         JsonSession jsession = gson.fromJson(data, JsonSession.class);
         session.readJsonSession(jsession);
-        System.out.println("***************** " + session.getId());
-        System.out.println("");
-        System.out.println("");
-        System.out.println("");
     }
 }
 
 
-
-class JsonSession{
+class JsonSession {
     public Long creationTime;
     public Long lastAccessedTime;
     public Integer maxInactiveInterval;
@@ -132,11 +86,11 @@ class JsonSession{
     public Long thisCreationTime;
     public ConcurrentMap<String, Object> attributesMap;
 
-    public JsonSession(){
+    public JsonSession() {
         attributesMap = new ConcurrentHashMap<String, Object>();
     }
 
-    public JsonSession(Long creationTime, Long lastAccessedTime, Integer maxInactiveInterval, Boolean isNew, Boolean isValid, Long thisAccessedTime, String sessionId, Long thisCreationTime){
+    public JsonSession(Long creationTime, Long lastAccessedTime, Integer maxInactiveInterval, Boolean isNew, Boolean isValid, Long thisAccessedTime, String sessionId, Long thisCreationTime) {
         this.creationTime = creationTime;
         this.lastAccessedTime = lastAccessedTime;
         this.maxInactiveInterval = maxInactiveInterval;

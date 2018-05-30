@@ -1,6 +1,6 @@
 # tomcat-redis-session-manager
 
-来源：https://github.com/izerui/tomcat-redis-session-manager
+最初来源：https://github.com/izerui/tomcat-redis-session-manager
 
 > 使用redis配置tomcat共享session
 
